@@ -1,15 +1,7 @@
 import { useState } from 'react'
-import blogServices from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const CreateNewBlog = ({
-  blogs,
-  setBlogs,
-  setErrorMessage,
-  setSuccessMessage,
-  user,
-  blogFormRef,
-}) => {
+const CreateNewBlog = ({ blogFormRef, addBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -21,29 +13,12 @@ const CreateNewBlog = ({
       title,
       url,
     }
+    addBlog(newBlog)
+    blogFormRef.current.toggleVisibility()
 
-    try {
-      blogFormRef.current.toggleVisibility()
-      const returnedBlog = await blogServices.create(newBlog)
-      console.log(returnedBlog)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-
-      setBlogs([...blogs, returnedBlog])
-      setSuccessMessage(`A new blog by ${user.username} added!`)
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 2000)
-    } catch (error) {
-      console.log(error)
-      setErrorMessage(
-        `Problem creating a new blog, try again. ${error.message}`
-      )
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 2000)
-    }
+    setTitle('')
+    setAuthor('')
+    setUrl('')
   }
 
   return (
@@ -52,6 +27,7 @@ const CreateNewBlog = ({
       <div>
         Author:
         <input
+          placeholder="author"
           type="text"
           name="author"
           value={author}
@@ -61,6 +37,7 @@ const CreateNewBlog = ({
       <div>
         Title:
         <input
+          placeholder="title"
           type="text"
           name="title"
           value={title}
@@ -70,23 +47,20 @@ const CreateNewBlog = ({
       <div>
         Url:
         <input
+          placeholder="url"
           type="text"
           name="url"
           value={url}
           onChange={({ target }) => setUrl(target.value)}
         />
       </div>
-      <button type="submit">Create a new blog</button>
+      <button type="submit">save</button>
     </form>
   )
 }
 
 CreateNewBlog.propTypes = {
-  blogs: PropTypes.array.isRequired,
-  setBlogs: PropTypes.func.isRequired,
-  setErrorMessage: PropTypes.func.isRequired,
-  setSuccessMessage: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
+  addBlog: PropTypes.func.isRequired,
 }
 
 export default CreateNewBlog

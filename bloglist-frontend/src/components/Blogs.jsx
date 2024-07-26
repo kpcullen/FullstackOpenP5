@@ -2,13 +2,21 @@ import Blog from './Blog'
 import CreateNewBlog from './CreateNewBlog'
 import ErrorMessage from './ErrorMessage'
 import SuccessMessage from './SuccessMessage'
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import Togglable from './Togglable'
 import PropTypes from 'prop-types'
 
-const Blogs = ({ user, blogs, setBlogs, handleLogout }) => {
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
+const Blogs = ({
+  user,
+  blogs,
+  setBlogs,
+  handleLogout,
+  addBlog,
+  errorMessage,
+  successMessage,
+  handleLike,
+  handleDelete,
+}) => {
   const blogFormRef = useRef()
 
   const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
@@ -23,11 +31,9 @@ const Blogs = ({ user, blogs, setBlogs, handleLogout }) => {
       <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
         <CreateNewBlog
           blogs={blogs}
-          setBlogs={setBlogs}
-          setErrorMessage={setErrorMessage}
-          setSuccessMessage={setSuccessMessage}
           user={user}
           blogFormRef={blogFormRef}
+          addBlog={addBlog}
         />
       </Togglable>
       {sortedBlogs.map((blog) => (
@@ -37,6 +43,8 @@ const Blogs = ({ user, blogs, setBlogs, handleLogout }) => {
           blogs={blogs}
           setBlogs={setBlogs}
           user={user}
+          handleLike={handleLike}
+          handleDelete={handleDelete}
         />
       ))}
     </div>
@@ -48,6 +56,9 @@ Blogs.propTypes = {
   blogs: PropTypes.array.isRequired,
   setBlogs: PropTypes.func.isRequired,
   handleLogout: PropTypes.func.isRequired,
+  addBlog: PropTypes.func.isRequired,
+  handleLike: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
 }
 
 export default Blogs

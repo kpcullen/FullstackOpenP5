@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import blogServices from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, blogs, setBlogs, user }) => {
+const Blog = ({ blog, user, handleLike, handleDelete }) => {
+  const [showDetails, setShowDetails] = useState(false)
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -11,59 +13,27 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
     marginBottom: 5,
   }
 
-  console.log('USER ID:', user)
-  console.log('BLOG ID:', blog)
-
-  const handleDelete = async (blog) => {
-    if (window.confirm(`Are you sure you want to delete ${blog.title}?`)) {
-      try {
-        const id = blog.id
-        await blogServices.remove(id)
-        setBlogs(blogs.filter((blog) => blog.id !== id))
-      } catch (err) {
-        console.log(err)
-      }
-    } else return
-  }
-
-  const [showDetails, setShowDetails] = useState(false)
-  const [likes, setLikes] = useState(blog.likes)
-
-  useEffect(() => {
-    const handleUpdateLike = async (blog) => {
-      try {
-        const updatedBlog = {
-          user: blog?.user?.id,
-          likes: likes,
-          author: blog.author,
-          title: blog.title,
-          url: blog.url,
-        }
-
-        const id = blog.id
-        await blogServices.update(id, updatedBlog)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    if (blog) handleUpdateLike(blog)
-  }, [likes, blog])
-
   return (
-    <div style={blogStyle}>
+    <div data-testid="blog-item" className="blog-post" style={blogStyle}>
       {blog.title} {blog.author}
-      <button onClick={() => setShowDetails(!showDetails)}>
+      <button
+        className="show-details-button"
+        onClick={() => setShowDetails(!showDetails)}
+      >
         {showDetails ? 'Hide' : 'View'}
       </button>
       {showDetails ? (
-        <>
+        <div className="details">
           <div> {blog.url}</div>
           <div>
-            Likes: {likes}
+            Likes:
+            <span className="blog-likes" data-testid={`likes-${blog.title}`}>
+              {blog.likes}
+            </span>
             <button
-              onClick={() => {
-                setLikes((likes) => likes + 1)
-              }}
+              data-testid={`like-button-${blog.title}`}
+              className="like-button"
+              onClick={() => handleLike(blog)}
             >
               Like
             </button>
@@ -72,7 +42,7 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
           {blog.user.username === user.username && (
             <button onClick={() => handleDelete(blog)}>Remove</button>
           )}
-        </>
+        </div>
       ) : (
         ''
       )}
@@ -82,9 +52,9 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  blogs: PropTypes.array.isRequired,
-  setBlog: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
+  handleLike: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
 }
 
 export default Blog
