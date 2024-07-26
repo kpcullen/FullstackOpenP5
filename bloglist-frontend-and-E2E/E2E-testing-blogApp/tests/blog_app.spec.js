@@ -68,11 +68,10 @@ describe('Blog app', () => {
       page,
     }) => {
       await createNewBlog(page, 'kevincullen', 'testblog1', 'blog.com')
-      page.waitForTimeout(1000)
+
       await createNewBlog(page, 'kevincullen', 'testblog2', 'blog.com')
-      page.waitForTimeout(1000)
+
       await createNewBlog(page, 'kevincullen', 'testblog3', 'blog.com')
-      page.waitForTimeout(2000)
 
       await page
         .locator('div')
@@ -80,23 +79,17 @@ describe('Blog app', () => {
         .getByRole('button')
         .click()
 
-      page.waitForTimeout(1000)
-
       await page
         .locator('div')
         .filter({ hasText: /^testblog2 kevincullenView$/ })
         .getByRole('button')
         .click()
 
-      await page.waitForTimeout(1000)
-
       await page
         .locator('div')
         .filter({ hasText: /^testblog3 kevincullenView$/ })
         .getByRole('button')
         .click()
-
-      page.waitForTimeout(1000)
 
       const testBlog1Button = await page.getByTestId('like-button-testblog1')
       const testBlog2Button = await page.getByTestId('like-button-testblog2')
